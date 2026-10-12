@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Registro de Estudiantes</title>
+    <link rel="stylesheet" href="src/styles/styles.css" />
+  </head>
+  <body>
+    <header class="cabecera">
+      <h1>Registro de Estudiantes</h1>
+    </header>
+
+    <main class="contenedor">
+      <section class="tarjeta" aria-labelledby="titulo-formulario">
+        <h2 id="titulo-formulario">Datos del estudiante</h2>
+
+        <form id="form-estudiante" novalidate>
+          <div class="campo">
+            <label for="codigo">Código *</label>
+            <input
+              type="text"
+              id="codigo"
+              name="codigo"
+              placeholder="Ej: U20260520"
+              autocomplete="off"
+            />
+            <small class="error" id="error-codigo"></small>
+          </div>
+
+          <div class="campo">
+            <label for="nombre">Nombre completo *</label>
+            <input
+              type="text"
+              id="nombre"
+              name="nombre"
+              placeholder="Ej: María Pérez"
+              autocomplete="off"
+            />
+            <small class="error" id="error-nombre"></small>
+          </div>
+
+          <div class="campo">
+            <label for="carrera">Carrera *</label>
+            <select id="carrera" name="carrera">
+              <option value="">-- Seleccione una carrera --</option>
+              <option value="Ingeniería de Sistemas">Ingeniería de Sistemas</option>
+              <option value="Ingeniería Industrial">Ingeniería Industrial</option>
+              <option value="Ingeniería Civil">Ingeniería Civil</option>
+              <option value="Administración">Administración</option>
+              <option value="Contaduría Pública">Contaduría Pública</option>
+              <option value="Derecho">Derecho</option>
+              <option value="Medicina">Medicina</option>
+              <option value="Psicología">Psicología</option>
+              <option value="Enfermería">Enfermería</option>
+              <option value="Arquitectura">Arquitectura</option>
+            </select>
+            <small class="error" id="error-carrera"></small>
+          </div>
+
+          <div class="acciones">
+            <button type="submit" id="btn-guardar" class="btn btn-primario">
+              Registrar
+            </button>
+            <button type="button" id="btn-cancelar" class="btn btn-secundario oculto">
+              Cancelar edición
+            </button>
+          </div>
+        </form>
+
+        <div id="mensaje" class="mensaje oculto" role="status" aria-live="polite"></div>
+      </section>
+
+      <section class="tarjeta" aria-labelledby="titulo-listado">
+        <div class="encabezado-listado">
+          <h2 id="titulo-listado">Listado de estudiantes</h2>
+          <span id="contador" class="contador">0 registros</span>
+        </div>
+
+        <div class="buscador">
+          <label for="busqueda" class="sr-only">Buscar</label>
+          <input
+            type="search"
+            id="busqueda"
+            placeholder="Buscar por código o nombre..."
+            autocomplete="off"
+          />
+        </div>
+
+        <div class="tabla-contenedor">
+          <table id="tabla-estudiantes">
+            <thead>
+              <tr>
+                <th>Código</th>
+                <th>Nombre</th>
+                <th>Carrera</th>
+                <th class="col-acciones">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="cuerpo-tabla">
+              <!-- Filas generadas dinámicamente -->
+            </tbody>
+          </table>
+          <p id="sin-resultados" class="sin-resultados oculto">
+            No se encontraron estudiantes.
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="pie">
+    </footer>
+
+    <script type="module" src="dist/main.js"></script>
+  </body>
+</html>

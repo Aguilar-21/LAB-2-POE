@@ -1,0 +1,13 @@
+{
+  "name": "registro-estudiantes",
+  "version": "1.0.0",
+  "description": "Aplicación MVC en TypeScript para registrar estudiantes (código, nombre y carrera) con persistencia en localStorage.",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "start": "npx --yes serve ."
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}
