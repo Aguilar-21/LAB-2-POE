@@ -41,21 +41,35 @@
           </div>
 
           <div class="campo">
+            <label for="email">Correo electrónico *</label>
+            <input
+              type="text"
+              id="email"
+              name="email"
+              placeholder="Ej: maria.perez@correo.com"
+              autocomplete="off"
+            />
+            <small class="error" id="error-email"></small>
+          </div>
+
+          <div class="campo">
             <label for="carrera">Carrera *</label>
-            <select id="carrera" name="carrera">
-              <option value="">-- Seleccione una carrera --</option>
-              <option value="Ingeniería de Sistemas">Ingeniería de Sistemas</option>
-              <option value="Ingeniería Industrial">Ingeniería Industrial</option>
-              <option value="Ingeniería Civil">Ingeniería Civil</option>
-              <option value="Administración">Administración</option>
-              <option value="Contaduría Pública">Contaduría Pública</option>
-              <option value="Derecho">Derecho</option>
-              <option value="Medicina">Medicina</option>
-              <option value="Psicología">Psicología</option>
-              <option value="Enfermería">Enfermería</option>
-              <option value="Arquitectura">Arquitectura</option>
-            </select>
+            <select id="carrera" name="carrera"></select>
             <small class="error" id="error-carrera"></small>
+          </div>
+
+          <div class="campo">
+            <label for="anio-ingreso">Año de ingreso *</label>
+            <input
+              type="number"
+              id="anio-ingreso"
+              name="anioIngreso"
+              placeholder="Ej: 2024"
+              min="1950"
+              max="2100"
+              autocomplete="off"
+            />
+            <small class="error" id="error-anio"></small>
           </div>
 
           <div class="acciones">
@@ -77,14 +91,24 @@
           <span id="contador" class="contador">0 registros</span>
         </div>
 
-        <div class="buscador">
-          <label for="busqueda" class="sr-only">Buscar</label>
+        <div id="contador-carreras" class="contador-carreras"></div>
+
+        <div class="barra-filtros">
           <input
             type="search"
             id="busqueda"
-            placeholder="Buscar por código o nombre..."
+            placeholder="Buscar por código, nombre o correo..."
             autocomplete="off"
           />
+          <select id="filtro-carrera" aria-label="Filtrar por carrera"></select>
+          <select id="ordenar" aria-label="Ordenar">
+            <option value="ninguno">Sin ordenar</option>
+            <option value="nombre">Ordenar por nombre</option>
+            <option value="codigo">Ordenar por código</option>
+          </select>
+          <button type="button" id="btn-exportar" class="btn btn-secundario">
+            Exportar CSV
+          </button>
         </div>
 
         <div class="tabla-contenedor">
@@ -93,7 +117,9 @@
               <tr>
                 <th>Código</th>
                 <th>Nombre</th>
+                <th>Correo</th>
                 <th>Carrera</th>
+                <th>Año</th>
                 <th class="col-acciones">Acciones</th>
               </tr>
             </thead>
@@ -109,8 +135,21 @@
     </main>
 
     <footer class="pie">
+      <p>Proyecto académico &middot; Programación Orientada a Eventos</p>
     </footer>
 
+    <div id="modal-credencial" class="modal oculto" role="dialog" aria-modal="true">
+      <div class="modal-caja">
+        <button type="button" id="modal-cerrar" class="modal-cerrar" aria-label="Cerrar">
+          &times;
+        </button>
+        <h3>Credencial del estudiante</h3>
+        <div id="modal-contenido"></div>
+        <div id="modal-qr" class="modal-qr"></div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
     <script type="module" src="dist/main.js"></script>
   </body>
 </html>

@@ -11,7 +11,7 @@ export class StorageService {
     this.clave = clave;
   }
 
-  /** Devuelve la lista completa de estudiantes guardados. */
+  /** Devuelve la lista completa de estudiantes guardados, normalizada. */
   obtenerTodos(): EstudianteData[] {
     try {
       const crudo = localStorage.getItem(this.clave);
@@ -22,7 +22,9 @@ export class StorageService {
       if (!Array.isArray(datos)) {
         return [];
       }
-      return datos.filter((item): item is EstudianteData => this.esEstudiante(item));
+      return datos
+        .map((item) => this.normalizar(item))
+        .filter((item): item is EstudianteData => item !== null);
     } catch (error) {
       console.error("No se pudo leer el almacenamiento:", error);
       return [];
@@ -44,16 +46,27 @@ export class StorageService {
     localStorage.removeItem(this.clave);
   }
 
-  private esEstudiante(valor: unknown): valor is EstudianteData {
+  private normalizar(valor: unknown): EstudianteData | null {
     if (typeof valor !== "object" || valor === null) {
-      return false;
+      return null;
     }
     const candidato = valor as Record<string, unknown>;
-    return (
-      typeof candidato.id === "string" &&
-      typeof candidato.codigo === "string" &&
-      typeof candidato.nombre === "string" &&
-      typeof candidato.carrera === "string"
-    );
+    if (
+      typeof candidato.id !== "string" ||
+      typeof candidato.codigo !== "string" ||
+      typeof candidato.nombre !== "string" ||
+      typeof candidato.carrera !== "string"
+    ) {
+      return null;
+    }
+    const anio = Number(candidato.anioIngreso);
+    return {
+      id: candidato.id,
+      codigo: candidato.codigo,
+      nombre: candidato.nombre,
+      carrera: candidato.carrera,
+      anioIngreso: Number.isFinite(anio) && anio > 0 ? anio : new Date().getFullYear(),
+      email: typeof candidato.email === "string" ? candidato.email : "",
+    };
   }
 }

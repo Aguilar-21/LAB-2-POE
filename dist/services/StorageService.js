@@ -6,7 +6,7 @@ export class StorageService {
     constructor(clave = "registro-estudiantes") {
         this.clave = clave;
     }
-    /** Devuelve la lista completa de estudiantes guardados. */
+    /** Devuelve la lista completa de estudiantes guardados, normalizada. */
     obtenerTodos() {
         try {
             const crudo = localStorage.getItem(this.clave);
@@ -17,7 +17,9 @@ export class StorageService {
             if (!Array.isArray(datos)) {
                 return [];
             }
-            return datos.filter((item) => this.esEstudiante(item));
+            return datos
+                .map((item) => this.normalizar(item))
+                .filter((item) => item !== null);
         }
         catch (error) {
             console.error("No se pudo leer el almacenamiento:", error);
@@ -38,15 +40,26 @@ export class StorageService {
     limpiar() {
         localStorage.removeItem(this.clave);
     }
-    esEstudiante(valor) {
+    normalizar(valor) {
         if (typeof valor !== "object" || valor === null) {
-            return false;
+            return null;
         }
         const candidato = valor;
-        return (typeof candidato.id === "string" &&
-            typeof candidato.codigo === "string" &&
-            typeof candidato.nombre === "string" &&
-            typeof candidato.carrera === "string");
+        if (typeof candidato.id !== "string" ||
+            typeof candidato.codigo !== "string" ||
+            typeof candidato.nombre !== "string" ||
+            typeof candidato.carrera !== "string") {
+            return null;
+        }
+        const anio = Number(candidato.anioIngreso);
+        return {
+            id: candidato.id,
+            codigo: candidato.codigo,
+            nombre: candidato.nombre,
+            carrera: candidato.carrera,
+            anioIngreso: Number.isFinite(anio) && anio > 0 ? anio : new Date().getFullYear(),
+            email: typeof candidato.email === "string" ? candidato.email : "",
+        };
     }
 }
 //# sourceMappingURL=StorageService.js.map

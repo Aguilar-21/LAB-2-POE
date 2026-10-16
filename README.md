@@ -1,18 +1,23 @@
 # Registro de Estudiantes
 
-Aplicación web para registrar estudiantes con sus datos básicos (código, nombre y carrera),
-desarrollada con **TypeScript** siguiendo el patrón **MVC** y persistencia en **localStorage**.
+Aplicación web para registrar estudiantes con sus datos básicos, desarrollada con
+**TypeScript** siguiendo el patrón **MVC** y persistencia en **localStorage** (sin frameworks).
 
 - **Materia:** Programación Orientada a Eventos
 
 ## Funcionalidades
 
-- Registrar estudiantes con **código**, **nombre** y **carrera**.
-- Buscar por **código o nombre**.
-- **Editar** y **eliminar** estudiantes.
-- Impedir **códigos duplicados**.
-- Mostrar el listado en una **tabla**.
-- Persistir los datos en **localStorage**.
+- **Registrar** estudiantes con código, nombre, correo, carrera y año de ingreso.
+- **Buscar** por código, nombre o correo (evento `input`).
+- **Filtrar por carrera** (evento `change`); se combina con la búsqueda.
+- **Ordenar** por nombre o por código.
+- **Editar** (modo edición: los datos se cargan en el formulario y el botón cambia a "Actualizar").
+- **Eliminar con confirmación**.
+- Impedir **códigos y correos duplicados**.
+- **Contador por carrera** y contador total de registros.
+- **Exportar el listado a CSV** (respeta los filtros activos).
+- Persistir automáticamente en **localStorage**.
+- **Reto adicional:** generar una **credencial con código QR** por estudiante.
 
 ## Estructura del proyecto
 
@@ -25,11 +30,12 @@ LAB 2 POE/
 ├── src/
 │   ├── main.ts                    # Punto de entrada (arma las capas)
 │   ├── models/
-│   │   └── Estudiante.ts          # Datos + validaciones
+│   │   ├── Estudiante.ts          # Entidad + validaciones
+│   │   └── EstudianteModel.ts     # Colección + reglas (CRUD, filtros, orden, CSV)
 │   ├── views/
-│   │   └── EstudianteView.ts      # Tabla, formulario y mensajes
+│   │   └── EstudianteView.ts      # Formulario, tabla, filtros, modal QR
 │   ├── controllers/
-│   │   └── EstudianteController.ts# CRUD + validación de duplicados
+│   │   └── EstudianteController.ts# Coordina eventos y capas
 │   ├── services/
 │   │   └── StorageService.ts      # Persistencia en localStorage
 │   └── styles/
@@ -54,7 +60,6 @@ npm start
 
 > Importante: el proyecto usa **módulos ES** (`type="module"`), por lo que debe abrirse
 > desde un servidor (`npm start`), no con doble clic sobre `index.html`.
-> Si tienes `serve` instalado globalmente también puedes ejecutar `serve .`.
 
 Durante el desarrollo puedes recompilar automáticamente:
 
@@ -67,19 +72,31 @@ npm run watch
 | Capa | Clase | Responsabilidad |
 |------|-------|-----------------|
 | **Model** | `Estudiante` | Representa al estudiante y aplica las validaciones. |
-| **View** | `EstudianteView` | Única capa que conoce el DOM: formulario, tabla y mensajes. |
-| **Controller** | `EstudianteController` | Maneja eventos, coordina el modelo, la vista y el almacenamiento, y evita códigos duplicados. |
+| **Model** | `EstudianteModel` | Administra la colección: `updateEstudiante`, `deleteEstudiante`, `filterByCarrera`, `sortByNombre`, `sortByCodigo`, `getContadorPorCarrera`, `exportarCSV`. |
+| **View** | `EstudianteView` | Única capa que conoce el DOM: formulario, tabla (`renderTabla`), contadores (`renderContador`), filtros y modal de QR. |
+| **Controller** | `EstudianteController` | Maneja eventos y coordina: `handleUpdate`, `handleDelete`, `handleExport`, búsqueda y filtros combinados. |
 | **Service** | `StorageService` | Guarda y recupera los datos desde `localStorage`. |
 
-Flujo típico de un registro:
+Flujo típico:
 
 ```
-Usuario -> View (captura el submit) -> Controller (valida)
-        -> Model (crea/actualiza)   -> Service (persiste) -> View (repinta la tabla)
+Usuario -> View (captura el evento) -> Controller (valida y decide)
+        -> EstudianteModel (crea/actualiza/filtra) -> StorageService (persiste)
+        -> View (repinta tabla y contadores)
 ```
 
 ## Validaciones
 
 - **Código:** obligatorio, de 3 a 15 caracteres (letras, números o guiones) y **sin duplicados**.
-- **Nombre:** obligatorio, mínimo 3 caracteres y solo letras/espacios.
-- **Carrera:** obligatoria (se elige de la lista).
+- **Nombre:** obligatorio, mínimo 3 caracteres, solo letras/espacios.
+- **Correo:** obligatorio, con formato válido (regex) y **único**.
+- **Carrera:** obligatoria (se elige de la lista `CARRERAS`).
+- **Año de ingreso:** obligatorio, 4 dígitos, entre **1950** y el año actual + 1.
+
+Cada error se muestra junto a su campo con un mensaje específico.
+
+## Nota sobre el código QR
+
+La credencial usa la librería [qrcode-generator](https://github.com/kazuhikoarase/qrcode-generator)
+cargada desde un CDN en `index.html`. Si no hay conexión a internet, el resto de la
+aplicación funciona con normalidad y solo se desactiva la generación del QR.
